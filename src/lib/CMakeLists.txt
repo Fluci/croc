@@ -11,4 +11,3 @@ list(REMOVE_ITEM SRC_FILES TEST_FILES)
 add_library(CrocLib ${SRC_FILES})
 
 add_executable(CrocTest ${TEST_FILES})
-

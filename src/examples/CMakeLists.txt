@@ -9,4 +9,3 @@ add_executable(RandomRealDemo ${SRC_FILES})
 
 # link library
 target_link_libraries(RandomRealDemo CrocLib)
-
