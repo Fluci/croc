@@ -1,6 +1,6 @@
 enable_testing()
 
-find_package(Boost 1.61 REQUIRED COMPONENTS unit_test_framework)
+find_package(Boost 1.46 REQUIRED COMPONENTS unit_test_framework)
 
 # Bring source files: 
 # first find test files, then source files and then remove test from source files

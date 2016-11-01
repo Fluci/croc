@@ -1,0 +1,29 @@
+language: cpp
+
+os:
+#- linux
+- osx
+
+compiler: 
+- clang
+- gcc
+- g++
+
+addons:
+ apt:
+  sources:
+  - boost-latest
+  packages:
+   - libboost-all-dev	
+
+before_install:
+ - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; if ! [[ `brew ls --versions boost` ]]; then brew install boost; fi; fi
+# - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update && sudo apt-get install libboost-all-dev; fi
+
+script:
+- mkdir -p build
+- cd build
+- cmake ..
+- make -j4
+- ./src/examples/RandomRealDemo
+- ./src/lib/CrocTest
