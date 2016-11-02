@@ -11,7 +11,7 @@ namespace croc {
 
 /**
 * Represents a random real number in [0, 1]. 
-* So called blocks can be accessed by [], 
+* So-called blocks can be accessed by operator[](), 
 * they represent the bits at positions 
 * [i*sizeof(block), (i+1)*sizeof(block)-1].
 * If a block i is read but didn't exist before,
@@ -20,7 +20,7 @@ namespace croc {
 *
 * Motivation: This class is written to be 
 * used in an implementation of a treap as key values.
-* This way, random search trees can be easily created.
+* This way, random search trees can easily be created.
 *
 * Equality
 * The equality of a random real number is in some way not even 
@@ -36,9 +36,18 @@ template <class random_engine = std::mt19937>
 class random_real{
 
 public:
+	/// the single bits are stored in blocks, they have type block_type
 	typedef uint32_t block_type;
+	/// type of index that is used to access blocks
 	typedef size_t index_type;
 	
+	/**
+	* All random reals use the same random number generator to get their 
+	* random bits. Use this function to set a new one. A random number
+	* generator needs to support operator().
+	* 
+	* @param re The new random engine to use.
+	*/
 	static void set_random_engine(const random_engine re) throw() {
 		r_engine = re;
 	}
@@ -49,9 +58,10 @@ private:
 
 public:
 	/**
-	* creates all blocks with @random_engine until block at @i exists
-	* 
-	* @return block at index @i
+	* creates all blocks with random_engine until block at i exists
+	*
+	* @param i requested block index
+	* @return block at index i
 	*/
 	block_type operator[](const index_type i) throw() {
 		for(int j = blocks.size(); j <= i; j += 1) {
@@ -61,7 +71,7 @@ public:
 	}
 
 	/**
-	* @return how many blocks are alread computed and stored
+	* @return how many blocks are already computed and stored
 	*/
 	index_type size() const throw() {
 		return blocks.size();
@@ -69,8 +79,14 @@ public:
 
 	/**
 	* Generates new blocks until x < y or y < x.
+	*
+	* @param other random_real to compare against
+	* @return true if other is larger, false if other is smaller
 	*/
 	bool operator<(random_real &other) throw() {
+		// I'm not totally sure about the implementation.
+		// Possible, that there is a massively more efficient implementation than this.
+
 		const int res = compareTo(other);
 		
 		if(res != 0) {
@@ -99,17 +115,23 @@ public:
 		}
 	}
 
-	/*
-	* As < operator, but inverts result.
+	/**
+	* As operator<(), but inverts result.
+	*
+	* @param other This is compared to random_real.
+	* @return true if other is smaller, false if other is larger
 	*/
 	bool operator>(random_real &other) throw() {
 		return other < (*this);
 	}
 
-	/*
+	/**
 	* compares the first min(size(), other.size()) blocks.
-	* -1: (*this) < other
-	* 0: (*this) == other
+	*
+	* @param other The random_real this random_real should be compared to.
+	* @return
+	* -1: (*this) < other\n 
+	* 0: (*this) == other\n
 	* 1: (*this) > other
 	*/
 	int compareTo(const random_real &other) const throw() {
@@ -130,10 +152,13 @@ public:
 		return 0;
 	}
 
-	/*
-	* Same definition for equality as ==. 
+	/**
+	* Same definition for equality as operator==(). 
 	* If their size() is unequal, 
-	* then < is applied and new blocks might be generated.
+	* then operator<() is applied and new blocks might be generated.
+	*
+	* @param other The other random_real to compare against.
+	* @return true if equal or this smaller than other, false otherwise
 	*/
 	bool operator<=(random_real &other) throw() {
 		if(size() != other.size()) {
@@ -142,11 +167,14 @@ public:
 		return compareTo(other) <= 0;
 	}
 
-	/*
-	* Same definition for equality as ==.
+	/**
+	* Same definition for equality as operator==().
 	* If their size() is unequal,
 	* then (*this) > other is performed 
 	* and new blocks might be generated.
+	*
+	* @param other random_real to compare against
+	* @return false if this strictly smaller than other, true otherwise
 	*/
 	bool operator>=(random_real &other) throw() {
 		if(size() != other.size()) {
@@ -155,9 +183,12 @@ public:
 		return compareTo(other) >= 0;
 	}
 
-	/*
+	/**
 	* True if and only if both numbers have same size 
 	* and all existing blocks are equal. No new blocks are generated.
+	*
+	* @param other random_real to check
+	* @return true if equal
 	*/
 	bool operator==(const random_real &other) const throw() {
 		if(size() != other.size()) {
@@ -166,15 +197,22 @@ public:
 		return compareTo(other) == 0;
 	}
 
-	/* 
+	/**
 	* negation of equality, no new blocks are generated
+	* 
+	* @param other Other random_real
+	* @return true if size() != other.size() or there is any unequal bits
 	*/
 	bool operator!=(const random_real &other) const throw() {
 		return !(other == (*this));
 	}
 
 	/**
-	* Print all available blocks as "0.01010101".
+	* Print all available bits as "0.01010101".
+	* 
+	* @param out output stream to write to
+	* @param real random_real to write
+	* @return the output stream
 	*/
 	friend std::ostream&
     operator<< (std::ostream &out, const random_real &real) throw() {
