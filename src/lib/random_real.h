@@ -3,6 +3,7 @@
 #ifndef CROC_RANDOM_REAL_H
 #define CROC_RANDOM_REAL_H
 
+#include <bitset>
 #include <iostream>
 #include <random>
 #include <vector>
@@ -48,7 +49,7 @@ public:
 	* 
 	* @param re The new random engine to use.
 	*/
-	static void set_random_engine(const random_engine re) throw() {
+	static void set_random_engine(const random_engine re) noexcept {
 		r_engine = re;
 	}
 
@@ -63,7 +64,7 @@ public:
 	* @param i requested block index
 	* @return block at index i
 	*/
-	block_type operator[](const index_type i) throw() {
+	block_type operator[](const index_type i) noexcept {
 		for(index_type j = blocks.size(); j <= i; j += 1) {
 			blocks.push_back(r_engine());
 		}
@@ -73,7 +74,7 @@ public:
 	/**
 	* @return how many blocks are already computed and stored
 	*/
-	index_type size() const throw() {
+	index_type size() const noexcept {
 		return blocks.size();
 	}
 
@@ -83,7 +84,7 @@ public:
 	* @param other random_real to compare against
 	* @return true if other is larger, false if other is smaller
 	*/
-	bool operator<(random_real &other) throw() {
+	bool operator<(random_real &other) noexcept {
 		// I'm not totally sure about the implementation.
 		// Possible, that there is a massively more efficient implementation than this.
 
@@ -121,7 +122,7 @@ public:
 	* @param other This is compared to random_real.
 	* @return true if other is smaller, false if other is larger
 	*/
-	bool operator>(random_real &other) throw() {
+	bool operator>(random_real &other) noexcept {
 		return other < (*this);
 	}
 
@@ -134,7 +135,7 @@ public:
 	* 0: (*this) == other\n
 	* 1: (*this) > other
 	*/
-	int compareTo(const random_real &other) const throw() {
+	int compareTo(const random_real &other) const noexcept {
 		const index_type common = std::min(size(), other.size());
 		for(index_type i = 0; i < common; i += 1) {
 			const block_type l = blocks[i];
@@ -160,7 +161,7 @@ public:
 	* @param other The other random_real to compare against.
 	* @return true if equal or this smaller than other, false otherwise
 	*/
-	bool operator<=(random_real &other) throw() {
+	bool operator<=(random_real &other) noexcept {
 		if(size() != other.size()) {
 			return (*this) < other;
 		}
@@ -176,7 +177,7 @@ public:
 	* @param other random_real to compare against
 	* @return false if this strictly smaller than other, true otherwise
 	*/
-	bool operator>=(random_real &other) throw() {
+	bool operator>=(random_real &other) noexcept {
 		if(size() != other.size()) {
 			return other < (*this);
 		}
@@ -190,7 +191,7 @@ public:
 	* @param other random_real to check
 	* @return true if equal
 	*/
-	bool operator==(const random_real &other) const throw() {
+	bool operator==(const random_real &other) const noexcept {
 		if(size() != other.size()) {
 			return false;
 		}
@@ -203,7 +204,7 @@ public:
 	* @param other Other random_real
 	* @return true if size() != other.size() or there is any unequal bits
 	*/
-	bool operator!=(const random_real &other) const throw() {
+	bool operator!=(const random_real &other) const noexcept {
 		return !(other == (*this));
 	}
 
@@ -215,7 +216,7 @@ public:
 	* @return the output stream
 	*/
 	friend std::ostream&
-    operator<< (std::ostream &out, const random_real &real) throw() {
+    operator<< (std::ostream &out, const random_real &real) noexcept {
 		out << "0.";
 		for(auto it : real.blocks) {
 			out << std::bitset<sizeof(block_type)*8>(it);
