@@ -3,7 +3,7 @@
 #include "random_real.h"
 #include <iostream>
 
-int main(int argc, char *argv[]) {
+int main(int, char**) {
 	croc::random_real<> real;
 
 	std::cout << "A random number when it has never been accessed: ";

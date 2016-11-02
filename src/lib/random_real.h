@@ -64,7 +64,7 @@ public:
 	* @return block at index i
 	*/
 	block_type operator[](const index_type i) throw() {
-		for(int j = blocks.size(); j <= i; j += 1) {
+		for(index_type j = blocks.size(); j <= i; j += 1) {
 			blocks.push_back(r_engine());
 		}
 		return blocks[i];
