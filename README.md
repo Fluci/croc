@@ -20,6 +20,7 @@ I always love to hear critique and to improve my style.
 I use `.cc` instead of `.cpp` because it makes it easier to apply filters based on suffixes.
 - The unit tests are written with `Boost.Test`.
 - `.travis.yml`: configuration file to run [continuous integration](https://travis-ci.org/Fluci/croc)
+- `Doxyfile`: configuration file for [Doxygen](http://www.doxygen.org) to create documentation in `docs`
 
 ## Building
 
@@ -37,4 +38,11 @@ You might want to install these for successful building:
 
 - `CMake`: kick off building process
 - `Boost.Test`: required for the unit tests
+
+## Documentation
+To create the documenation, install [Doxygen](http://www.doxygen.org). In the root directory:
+
+```
+doxygen Doxyfile; # creates `docs/` and creates documentation from source files
+```
 
