@@ -1,13 +1,16 @@
 language: cpp
+sudo: false
+osx_image: xcode8
 
 os:
 #- linux
 - osx
 
+
 compiler: 
-- clang
-- gcc
-- g++
+- clang++
+#- gcc
+#- g++
 
 addons:
  apt:
@@ -18,12 +21,17 @@ addons:
 
 before_install:
  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; if ! [[ `brew ls --versions boost` ]]; then brew install boost; fi; fi
+ - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then if ! [[ `brew ls --versions gcc` ]]; then brew install gcc; fi; fi
+ - gcc --version
+ - g++ --version
+ - clang --version
+ - clang++ --version
 # - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update && sudo apt-get install libboost-all-dev; fi
 
 script:
 - mkdir -p build
 - cd build
-- cmake ..
-- make -j4
+- cmake -DCMAKE_C_COMPILER=${CC} -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_VERBOSE_MAKEFILE=ON ..
+- make -j2
 - ./src/examples/RandomRealDemo
 - ./src/lib/CrocTest
