@@ -48,7 +48,7 @@ public:
 	}
 
 private:
-	static random_engine r_engine;
+	thread_local static random_engine r_engine;
 	std::vector<block_type> blocks;
 
 public:
@@ -200,7 +200,7 @@ public:
 };
 
 template <class T>
-T random_real<T>::r_engine = T();
+thread_local T random_real<T>::r_engine = T();
 
 }  // namespace croc
 
