@@ -24,14 +24,8 @@ namespace croc {
 * This way, random search trees can easily be created.
 *
 * Equality
-* The equality of a random real number is in some way not even 
-* reasonable (since you can just generate new blocks
-* until the equality no longer holds). 
-* Though it is an interesting exercise to define a somewhat
-* reasonable equality and it certainly is more challenging than
-* just returning false.
-* The semantics of equality is 
-* "equal as far as I can tell without generating new blocks".
+* If and only if they are the same object
+* (pointer comparison: this == &other).
 */
 template <class random_engine = std::mt19937>
 class random_real{
@@ -79,63 +73,43 @@ public:
 	}
 
 	/**
-	* Generates new blocks until x < y or y < x.
+	* Generates new blocks until x < y or y < x. 
+	* Only exception is when this == &other (object compared to itself),
+	* then no new blocks are created and false is returned.
 	*
 	* @param other random_real to compare against
-	* @return true if other is larger, false if other is smaller
+	* @return true if other is larger, false if other is smaller; fals if this was passed
 	*/
 	bool operator<(random_real &other) noexcept {
-		// I'm not totally sure about the implementation.
-		// Possible, that there is a massively more efficient implementation than this.
-
-		const int res = compareTo(other);
-		
-		if(res != 0) {
-			if(res == -1) {
-				// l < r
-				return true;
-			}
-			// l > r
-			return false;
-		}
-		
-		// l == r so far, so let us generate some new blocks to decide
-		
-		const int common = std::min(size(), other.size());
-		
-		for(index_type i = common; true; i += 1) {
-			const block_type l = (*this)[i];
-			const block_type r = other[i];
-			if(l != r) {
-				if(l < r) {
-					return true;
-				}
-				// l > r
-				return false;
-			}
-		}
+		return compareTo(other) == -1;
 	}
 
 	/**
-	* As operator<(), but inverts result.
+	* Similar to operator<().
 	*
 	* @param other This is compared to random_real.
-	* @return true if other is smaller, false if other is larger
+	* @return true if other is smaller, false if other is larger; false if this was passed
 	*/
 	bool operator>(random_real &other) noexcept {
-		return other < (*this);
+		return compareTo(other) == 1;
 	}
 
 	/**
-	* compares the first min(size(), other.size()) blocks.
-	*
+	* Checks if object is passed to itself, if not, new blocks are generated
+	* until < or > is true.
+	* 
 	* @param other The random_real this random_real should be compared to.
 	* @return
 	* -1: (*this) < other\n 
-	* 0: (*this) == other\n
+	* 0: this == &other\n
 	* 1: (*this) > other
 	*/
-	int compareTo(const random_real &other) const noexcept {
+
+	int compareTo(random_real &other) noexcept {
+		if(this == &other) {
+			return 0;
+		}
+		
 		const index_type common = std::min(size(), other.size());
 		for(index_type i = 0; i < common; i += 1) {
 			const block_type l = blocks[i];
@@ -149,63 +123,63 @@ public:
 				return 1;
 			}
 		}
-		// l == r
-		return 0;
+		
+		// l == r so far, so let us generate some new blocks to decide
+		
+		for(index_type i = common; true; i += 1) {
+			const block_type l = (*this)[i];
+			const block_type r = other[i];
+			if(l != r) {
+				if(l < r) {
+					return -1;
+				}
+				// l > r
+				return 1;
+			}
+		}
 	}
 
 	/**
 	* Same definition for equality as operator==(). 
-	* If their size() is unequal, 
-	* then operator<() is applied and new blocks might be generated.
+	* New blocks might be generated to decide < or >.
 	*
 	* @param other The other random_real to compare against.
-	* @return true if equal or this smaller than other, false otherwise
+	* @return true if this equal or smaller than other, false otherwise
 	*/
 	bool operator<=(random_real &other) noexcept {
-		if(size() != other.size()) {
-			return (*this) < other;
-		}
 		return compareTo(other) <= 0;
 	}
 
 	/**
 	* Same definition for equality as operator==().
-	* If their size() is unequal,
-	* then (*this) > other is performed 
-	* and new blocks might be generated.
+	* New blocks might be generated.
 	*
 	* @param other random_real to compare against
 	* @return false if this strictly smaller than other, true otherwise
 	*/
 	bool operator>=(random_real &other) noexcept {
-		if(size() != other.size()) {
-			return other < (*this);
-		}
 		return compareTo(other) >= 0;
 	}
 
 	/**
-	* True if and only if both numbers have same size 
-	* and all existing blocks are equal. No new blocks are generated.
+	* True if and only if both numbers are the same object. 
+	* 
 	*
 	* @param other random_real to check
-	* @return true if equal
+	* @return true if this == &other
 	*/
 	bool operator==(const random_real &other) const noexcept {
-		if(size() != other.size()) {
-			return false;
-		}
-		return compareTo(other) == 0;
+		return this == &other;
 	}
 
 	/**
-	* negation of equality, no new blocks are generated
+	* Negation of equality operator==(), no new blocks are generated.
 	* 
 	* @param other Other random_real
-	* @return true if size() != other.size() or there is any unequal bits
+	* @return true if this != &other
 	*/
 	bool operator!=(const random_real &other) const noexcept {
-		return !(other == (*this));
+		return this != &other;
 	}
 
 	/**

@@ -68,30 +68,65 @@ BOOST_FIXTURE_TEST_CASE(testRandomRealEquality, F) {
 
 	croc::random_real<> r2(r1);
 
-	BOOST_TEST((r1 == r2));
+	BOOST_TEST(!(r1 == r2));
 
-	// make them uniqual
+	// make them unequal
 	r2[5];
 	BOOST_TEST((r1 != r2));
 }
 
-BOOST_FIXTURE_TEST_CASE(testRandomRealnonStrict, F) {
+BOOST_FIXTURE_TEST_CASE(testRandomRealLessEqual, F) {
 	croc::random_real<> r1;
 	r1[4];
 
 	croc::random_real<> r2(r1);
 
-	BOOST_TEST((r1 == r2));
-	BOOST_TEST((r1 <= r2));
-	BOOST_TEST((r1 >= r2));
-
-	// make them uniqual
-	r2[5];
-	BOOST_TEST((r1 != r2));
-	
 	BOOST_TEST((r1 <= r2) != (r1 >= r2));
-	BOOST_TEST((r1 <= r2) == (r1 < r2));
-	BOOST_TEST((r1 >= r2) == (r1 > r2));
+	BOOST_TEST(r1.size() > 5);
+	BOOST_TEST(r2.size() > 5);
+}
+
+BOOST_FIXTURE_TEST_CASE(testRandomRealSelfEquality, F) {
+	croc::random_real<> r1;
+	r1[4];
+
+	BOOST_TEST((r1 == r1));
+	BOOST_TEST(r1.size() == 5);
+}
+
+BOOST_FIXTURE_TEST_CASE(testRandomRealSelfInEquality, F) {
+	croc::random_real<> r1;
+	r1[4];
+	BOOST_TEST(!(r1 != r1));
+	BOOST_TEST(r1.size() == 5);
+}
+
+BOOST_FIXTURE_TEST_CASE(testRandomRealSelfLess, F) {
+	croc::random_real<> r1;
+	r1[4];
+	BOOST_TEST(!(r1 < r1));
+	BOOST_TEST(r1.size() == 5);
+}
+
+BOOST_FIXTURE_TEST_CASE(testRandomRealSelfLarger, F) {
+	croc::random_real<> r1;
+	r1[4];
+	BOOST_TEST(!(r1 > r1));
+	BOOST_TEST(r1.size() == 5);
+}
+
+BOOST_FIXTURE_TEST_CASE(testRandomRealSelfLessEq, F) {
+	croc::random_real<> r1;
+	r1[4];
+	BOOST_TEST((r1 <= r1));
+	BOOST_TEST(r1.size() == 5);
+}
+
+BOOST_FIXTURE_TEST_CASE(testRandomRealSelfLargerEq, F) {
+	croc::random_real<> r1;
+	r1[4];
+	BOOST_TEST((r1 >= r1));
+	BOOST_TEST(r1.size() == 5);
 }
 
 BOOST_FIXTURE_TEST_CASE(testRandomRealCopyLess, F) {
@@ -101,8 +136,7 @@ BOOST_FIXTURE_TEST_CASE(testRandomRealCopyLess, F) {
 
 	croc::random_real<> r2(r1);
 
-	// make sure they are equal up to the copied part
-	BOOST_TEST((r1 == r2));
+	BOOST_TEST(!(r1 == r2));
 
 	BOOST_TEST((r1 < r2) != (r1 > r2));
 	BOOST_TEST((r1 < r2) != (r2 < r1));
