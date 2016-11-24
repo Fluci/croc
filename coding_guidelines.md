@@ -16,6 +16,11 @@ Take for example one wants to implement random real numbers in the interval `[0,
 When compared they generate new digits until they differ. 
 Sometimes one might want to compare a randomly generated number with a deterministic number (for example a `0` or `0.111…`/`1`). 
 This is a common operation in treaps (for example when merging and splitting).
+- *Learn from professionals*: Often somebody already solved the same or a similar problem (Especially if you're reimplementing something for the sake of learning). 
+If you roughly know, what you want to do, go and look at the solutions other people came up with. 
+There's nearly always a way to find the solution of an expert since there are many open-source libraries/projects out there.
+In the simplest way, go and check your STL implementation. 
+Many classes are templates, and so you can find big chunks of the code on your machine in the header files.
 
 ## Tools
 
