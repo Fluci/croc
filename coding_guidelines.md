@@ -7,6 +7,17 @@ I've tried to order my thoughts in different phases and roughly in a "temporal o
 
 No claim made on having the best solutions.
 
+## Preparation
+- *Know what you want*: I often want to do everything at once (implement this cool data structure, write that ingenious script, learn this aspect, spend time with my loved once, …). 
+Time management is important for me to look back on a successful day. 
+Ask yourself what you want to reach with a project. 
+How much time do you want to invest? 
+Are there things with high priority/that are cooler?
+It's an old wisdom, do one thing at a time and do it right. 
+It took me years until I finally put this advice into practice.
+- *Work-Life-Balance*: It's great to be on the way to mastery. 
+Don't forget your family and friends.
+
 ## Planning
 
 - *Test your algorithm on paper*: Everybody tells you that, first think about your algorithm, then code it.
@@ -21,11 +32,16 @@ If you roughly know, what you want to do, go and look at the solutions other peo
 There's nearly always a way to find the solution of an expert since there are many open-source libraries/projects out there.
 In the simplest way, go and check your STL implementation. 
 Many classes are templates, and so you can find big chunks of the code on your machine in the header files.
+- *Take a break, explain it to somebody*: When stuck, go and drink tea or come back tomorrow. 
+Getting some distance often gives your brain the chance to win a new perspective. 
+Explaining your problem to someone forces you to follow one red line and make things as simple as possible (especially if the other person has no clue about computer science). 
+You then often simplify this in a way you would never have done for yourself.
 
 ## Tools
 
 - *Know your tools*: Most IDEs are very powerful, but you need to know where the buttons are. 
-Keep reading the tips-and-tricks pages of your favourite blog or book.
+Same for version control systems (seriously, use one), continuous integration platforms, lints and other beautiful little gizmos.
+Keep reading the tips-and-tricks pages of your favourite.
 
 ## Implementation
 
@@ -40,12 +56,24 @@ I tend to learn a new feature (for example `noexcept`) and use it all over the p
 That's ok, but keep an open mind and regularly check the basics. 
 In our example, one would then see that putting `noexcept` blindly everywhere can lead to problems since it's part of the interface. 
 If you suddenly decide to remove it, you can't since it's part of the contract. 
-Going in the other direction is a lot easier, you always can add a `noexcept` and make the contract tighter on your side.
+Going in the other direction is a lot easier, you always can add a `noexcept` and make the contract tighter on your side. 
+    - [C++ FAQ](https://isocpp.org/faq)
 - *Comments*: Write down your design decisions. 
 Why did you solve something the way you solved it? Working out what a code does is a question of experience, time and reverse engineering skills. 
 But getting the answer to a "why?" question is really hard. 
 Maybe explain in one or two sentences why you prefer one solution over some other. 
 Coming back after half a year and trying to fix a bug with a wrong model in mind can cost you a lot of time.
+- *Can I do better?*: After implementing and showing that some code works, take a step back and study what you've written. 
+Is this the best code I can produce? 
+Is there a simpler way of approaching the problem? 
+That's not necessarily the same as thinking about the best algorithm but might include using specialities of the language. 
+Take as an example a linked list, assume you want to iterate through it, maybe deleting a node `x`. 
+The algorithm is pretty straightforward, just follow the pointers and change them as necessary when node `x` is found. 
+One way to implement this is by storing the parent in an additional variable and updated it each time you advance one node. 
+Another way is to use a pointer to a pointer (the field of the parent that points to the active node). 
+Both are valid solutions, but I prefer the double pointer method since it has less special cases. 
+An alternative might be to use a root dummy node. 
+
 
 ## Testing
 
@@ -72,3 +100,12 @@ I normally turn those hints off if they conflict with my personal style (consist
 Let the computer be your teacher, and let it show you style issues that can cause serious bugs. 
 The problem zones of a language are well known, and solutions are often easy. 
 One of my favourite examples is `==` and `===` in JavaScript, both work, but `===` clearly leads to fewer bugs since it's closer to the intuition.
+
+## Feedback
+
+- *Ask people their opinion*: There's only so much you can do in your bubble, and there's nothing more valuable than a second opinion.
+Take every advice serious (from whoever it comes from); 
+Think careful about it, discuss it and finally accept or reject it.
+Make sure it's your reason that decides and not your hurt ego.
+
+
