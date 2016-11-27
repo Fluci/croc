@@ -120,9 +120,9 @@ Some things I've encountered that weren't obvious to me at the time.
 - use initialization lists rather than assignment [isocpp FAQ](https://isocpp.org/wiki/faq/coding-standards#lint-guidelines)
 - check for danger of self assignment or other cases where an object is passed to itself [isocpp FAQ](https://isocpp.org/wiki/faq/coding-standards#lint-guidelines), [isocpp FAQ](https://isocpp.org/wiki/faq/assignment-operators#self-assignment-what)
 - carefull about placing `noexcept`
-- "a C++ byte might have mor than 8 bits" [isocpp FAQ](https://isocpp.org/wiki/faq/intrinsic-types#bits-per-byte): mostly from old times or today in low-level systems relevant??
+- "a C++ byte might have more than 8 bits" [isocpp FAQ](https://isocpp.org/wiki/faq/intrinsic-types#bits-per-byte): mostly from old times or today in low-level systems relevant??
 - difference `std::endl` and `'\n'`: `std::endl` also flushes (`std::flush`) [isocpp FAQ](https://isocpp.org/wiki/faq/input-output#endl-vs-slash-n)
-- correctly use printing of classes: `friand operator<<()` and `printOn()` [isocpp FAQ](https://isocpp.org/wiki/faq/input-output#output-operator-via-friends)
+- correctly use printing of classes: `friend operator<<()` and `printOn()` [isocpp FAQ](https://isocpp.org/wiki/faq/input-output#output-operator-via-friends)
 - Use `/` as path separator [isocpp FAQ](https://isocpp.org/wiki/faq/input-output#backslashes-in-filenames)
 - `X& const x` is nonsense, references are always constant. [isocpp FAQ](https://isocpp.org/wiki/faq/const-correctness#const-ref-nonsense)
 - Make sure to return const references (to members) from constant methods. `const X& f() const;` (not `X& f() const;`), the compiler might not always catch this. [isocpp FAQ](https://isocpp.org/wiki/faq/const-correctness#return-const-ref-from-const-memfn)
@@ -175,4 +175,14 @@ Some things I've encountered that weren't obvious to me at the time.
 - Destructors always automagically destruct members. [isocpp FAQ](https://isocpp.org/wiki/faq/dtors#calling-member-dtors)
 - Destructors automagically call inherited destructors. [isocpp FAQ](https://isocpp.org/wiki/faq/dtors#calling-base-dtor)
 - Distinguish between operators defined as functions and defined as members. [isocpp FAQ: point 7](https://isocpp.org/wiki/faq/operator-overloading#op-ov-rules)
+- auto-generation of constructor/destructor/etc.: [stackoverflow](http://stackoverflow.com/questions/4943958/conditions-for-automatic-generation-of-default-copy-move-ctor-and-copy-move-assi)  
+u. d.: user-declared
 
+	| auto-generated           | if                   |
+	| -----------------------: |:---------------------|
+	| default constructor      | no u. d. constructor |
+	| copy constructor         | no u. d. move constructor or move assignment operator |
+	| copy assignment operator | no u. d. move constructor or assignment operator |
+	| destructor               | no u. d. destructor  |
+	| move constructor         | no u. d. copy constructor, copy assignment operator or destructor |
+	| move assignment operator | no u. d. copy constructor, copy assingment operator or destructor |
