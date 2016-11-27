@@ -24,25 +24,30 @@ namespace croc {
 * used in an implementation of a treap as key values.
 * This way, random search trees can easily be created.
 *
+* THIS CLASS IS NOT INTENDED FOR MATHEMATICAL USE.
+*
+* Because of that, this class doesn't support any arithmetic operations
+* and hence the strange definition of `integer + [0, 1)` (strange for negative integers).
+*
 * Equality
 * If and only if they are the same object
-* (pointer comparison: this == &other).
+* (pointer comparison: `&real1 == &real2`).
 */
 template <class random_engine = std::mt19937>
 class random_real{
 
 public:
-	/// signed integer/characteristic: everything in front of the dot is fixed at construction. 
-	typedef int integer_type;
-	/// fractional-part/mantissa: the single bits are stored in blocks, they have type block_type
+	/// Signed integer/characteristic: everything in front of the dot is fixed at construction.
+	typedef const int integer_type;
+	/// Fractional-part/mantissa: the single bits are stored in blocks, they have type `block_type`.
 	typedef uint32_t block_type;
-	/// type of index that is used to access blocks
+	/// Type of index that is used to access blocks.
 	typedef size_t index_type;
 	
 	/**
 	* All random reals use the same random number generator to get their 
 	* random bits. Use this function to set a new one. A random number
-	* generator needs to support operator().
+	* generator needs to support `operator()`.
 	* 
 	* @param re The new random engine to use.
 	*/
@@ -54,169 +59,199 @@ private:
 	thread_local static random_engine r_engine;
 	std::vector<block_type> blocks;
 	integer_type integer;
+
 public:
 	/**
-	* Create a random_real with a characteristic int_part. 
+	* Create a `random_real` with a characteristic of value `int_part`.
 	* The integer part remains fixed.
+	*
+	* @param int_part The constructed random real will start with `int_part`
+	* followed by a dot (.) and the random fraction bits
 	**/
-	explicit random_real(integer_type int_part = 0) : integer(int_part) {
+	explicit random_real(integer_type int_part = 0) noexcept : integer(int_part) {
 		// empty
 	}
 
+	/**
+	* Integer part of random real.
+	*
+	* @return integer part set at construction
+	**/
 	integer_type get_integer() const noexcept {
 		return integer;
 	}
 	/**
-	* creates all blocks with random_engine until block at i exists
+	* Creates all blocks with `random_engine` until block at `i` exists.
 	*
 	* @param i requested block index
-	* @return block at index i
+	* @return block at index `i`
 	*/
 	block_type operator[](const index_type i) noexcept {
-		for(index_type j = blocks.size(); j <= i; j += 1) {
+		for(auto j = blocks.size(); j <= i; j += 1) {
 			blocks.push_back(r_engine());
 		}
 		return blocks[i];
 	}
 
 	/**
-	* @return how many blocks are already computed and stored
+	* @return How many blocks are already computed and stored.
 	*/
 	index_type size() const noexcept {
 		return blocks.size();
 	}
 
 	/**
-	* Generates new blocks until x < y or y < x. 
-	* Only exception is when this == &other (object compared to itself),
-	* then no new blocks are created and false is returned.
-	*
-	* @param other random_real to compare against
-	* @return true if other is larger, false if other is smaller; fals if this was passed
-	*/
-	bool operator<(random_real &other) noexcept {
-		return compareTo(other) == -1;
-	}
-
-	/**
-	* Similar to operator<().
-	*
-	* @param other This is compared to random_real.
-	* @return true if other is smaller, false if other is larger; false if this was passed
-	*/
-	bool operator>(random_real &other) noexcept {
-		return compareTo(other) == 1;
-	}
-
-	/**
 	* Checks if object is passed to itself, if not, new blocks are generated
-	* until < or > is true.
+	* until `operator<()` or `operator>()` is true.
 	* 
-	* @param other The random_real this random_real should be compared to.
+	* @param other The `random_real` this `random_real` should be compared to.
 	* @return
-	* -1: (*this) < other\n 
-	* 0: this == &other\n
-	* 1: (*this) > other
+	* -1: `(*this) < other`\n
+	* 0: `this == &other`\n
+	* 1: `(*this) > other`
 	*/
 
-	int compareTo(random_real &other) noexcept {
-		if(this == &other) {
-			return 0;
-		}
-		if(integer != other.integer) {
-			return integer < other.integer ? -1 : 1;
-		}
-		const index_type common = std::min(size(), other.size());
-		for(index_type i = 0; i < common; i += 1) {
-			const block_type l = blocks[i];
-			const block_type r = other.blocks[i];
-
-			if(l != r) {
-				if(l < r) {
-					return -1;
-				}
-				// l > r
-				return 1;
-			}
-		}
-		
-		// l == r so far, so let us generate some new blocks to decide
-		
-		for(index_type i = common; true; i += 1) {
-			const block_type l = (*this)[i];
-			const block_type r = other[i];
-			if(l != r) {
-				if(l < r) {
-					return -1;
-				}
-				// l > r
-				return 1;
-			}
-		}
-	}
+	int compareTo(random_real& other) noexcept;
 
 	/**
-	* Same definition for equality as operator==(). 
-	* New blocks might be generated to decide < or >.
-	*
-	* @param other The other random_real to compare against.
-	* @return true if this equal or smaller than other, false otherwise
-	*/
-	bool operator<=(random_real &other) noexcept {
-		return compareTo(other) <= 0;
-	}
-
-	/**
-	* Same definition for equality as operator==().
-	* New blocks might be generated.
-	*
-	* @param other random_real to compare against
-	* @return false if this strictly smaller than other, true otherwise
-	*/
-	bool operator>=(random_real &other) noexcept {
-		return compareTo(other) >= 0;
-	}
-
-	/**
-	* True if and only if both numbers are the same object. 
-	* 
-	*
-	* @param other random_real to check
-	* @return true if this == &other
-	*/
-	bool operator==(const random_real &other) const noexcept {
-		return this == &other;
-	}
-
-	/**
-	* Negation of equality operator==(), no new blocks are generated.
-	* 
-	* @param other Other random_real
-	* @return true if this != &other
-	*/
-	bool operator!=(const random_real &other) const noexcept {
-		return this != &other;
-	}
-
-	/**
-	* Print all available bits as "0.01010101".
-	* 
-	* @param out output stream to write to
-	* @param real random_real to write
-	* @return the output stream
-	*/
-	friend std::ostream&
-    operator<< (std::ostream &out, const random_real &real) noexcept {
-		out << real.integer << ".";
+	 * Print all available bits as `<integer>.01010101`.
+	 *
+	 * Careful: `-1.101` has to be interpreted as `-1 + 0.101`
+	 *
+	 * @param out output stream to write to
+	 * @param real random_real to write
+	 * @return the output stream
+	 */
+	friend std::ostream& operator<< (std::ostream& out, const random_real& real) noexcept {
+		out << real.get_integer() << ".";
 		for(auto it : real.blocks) {
-			out << std::bitset<sizeof(block_type)*8>(it);
+			out << std::bitset<sizeof(random_real::block_type)*8>(it);
 		}
 		return out;
 	}
 };
 
+
+/** \relates random_real
+ * True if and only if both numbers are the same object.
+ *
+ *
+ * @param lhs left hand-side
+ * @param rhs right hand-side
+ * @return `true` if `&lhs == &rhs`
+ */
 template <class T>
-thread_local T random_real<T>::r_engine = T();
+bool operator==(const random_real<T>& lhs, const random_real<T>& rhs) noexcept {
+	return &lhs == &rhs;
+}
+
+
+/** \relates random_real
+ * Negation of equality `operator==()`, no new blocks are generated.
+ *
+ * @param lhs left hand-side
+ * @param rhs right hand-side
+ * @return `true` if `&lhs != &rhs`
+ */
+template <class T>
+bool operator!=(const random_real<T>& lhs, const random_real<T>& rhs) noexcept {
+	return &lhs != &rhs;
+}
+
+
+/** \relates random_real
+ * Same definition for equality as `operator==()`.
+ * New blocks might be generated to decide `operator<()` or `operator>()`.
+ *
+ * @param lhs left hand-side
+ * @param rhs right hand-side
+ * @return `true` if `lhs` equal or smaller than `rhs`, `false` otherwise
+ */
+template <class T>
+bool operator<=(random_real<T>& lhs, random_real<T>& rhs) noexcept {
+	return lhs.compareTo(rhs) <= 0;
+}
+
+/** \relates random_real
+ * Same definition for equality as `operator==()`.
+ * New blocks might be generated.
+ *
+ * @param lhs left hand-side
+ * @param rhs right hand-side
+ * @return `false` if `lhs` strictly smaller than `rhs`, `true` otherwise
+ */
+template <class T>
+bool operator>=(random_real<T>& lhs, random_real<T>& rhs) noexcept {
+	return lhs.compareTo(rhs) >= 0;
+}
+
+
+/** \relates random_real
+ * Generates new blocks until `x < y` or `y < x`.
+ * Only exception is when `this == &other` (object compared to itself),
+ * then no new blocks are created and `false` is returned.
+ *
+ * @param lhs left hand-side
+ * @param rhs right hand-side
+ * @return `true` if `rhs` is larger, `false` if `rhs` is smaller; `false` if `lhs == rhs`
+ */
+template <class T>
+bool operator<(random_real<T>& lhs, random_real<T>& rhs) noexcept {
+	return lhs.compareTo(rhs) == -1;
+}
+
+/** \relates random_real
+ * Similar to `operator<()`.
+ *
+ * @param lhs left hand-side
+ * @param rhs right hand-side
+ * @return `true` if `rhs` is smaller, `false` if `rhs` is larger; `false` if `lhs == rhs`
+ */
+template <class T>
+bool operator>(random_real<T>& lhs, random_real<T>& rhs) noexcept {
+	return lhs.compareTo(rhs) == 1;
+}
+
+// method implementations
+
+
+template <class T>
+int random_real<T>::compareTo(random_real<T>& other) noexcept {
+	if(this == &other) {
+		return 0;
+	}
+	if(integer != other.integer) {
+		return integer < other.integer ? -1 : 1;
+	}
+	const index_type common = std::min(size(), other.size());
+	for(index_type i = 0; i < common; i += 1) {
+		const block_type l = blocks[i];
+		const block_type r = other.blocks[i];
+
+		if(l != r) {
+			if(l < r) {
+				return -1;
+			}
+			// l > r
+			return 1;
+		}
+	}
+
+	// l == r so far, so let us generate some new blocks to decide
+
+	for(index_type i = common; true; i += 1) {
+		const block_type l = (*this)[i];
+		const block_type r = other[i];
+		if(l != r) {
+			if(l < r) {
+				return -1;
+			}
+			// l > r
+			return 1;
+		}
+	}
+}
+template <class T> thread_local T random_real<T>::r_engine{};
 
 }  // namespace croc
 
