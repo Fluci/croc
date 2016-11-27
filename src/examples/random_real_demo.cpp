@@ -20,5 +20,11 @@ int main(int, char**) {
 	std::cout << "another real: ";
 	std::cout << real2 << std::endl;
 
+	croc::random_real<> real3(17);
+	real3[1];
+
+	std::cout << "a real with integer = 17: ";
+	std::cout << real3 << std::endl;
+
 	return 0;
 }

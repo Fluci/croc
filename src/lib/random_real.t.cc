@@ -19,6 +19,17 @@ struct F {
 	}
 };
 
+BOOST_FIXTURE_TEST_CASE(testRandomRealInteger, F) {
+	croc::random_real<> r1;
+	BOOST_TEST(r1.get_integer() == 0);
+
+	croc::random_real<> r2(17);
+	BOOST_TEST(r2.get_integer() == 17);
+
+	croc::random_real<> r3(-19);
+	BOOST_TEST(r3.get_integer() == -19);
+}
+
 BOOST_FIXTURE_TEST_CASE(testRandomRealGeneration, F) {
 	croc::random_real<> rr;
 	BOOST_TEST(rr.size() == 0);
@@ -127,6 +138,16 @@ BOOST_FIXTURE_TEST_CASE(testRandomRealSelfLargerEq, F) {
 	r1[4];
 	BOOST_TEST((r1 >= r1));
 	BOOST_TEST(r1.size() == 5);
+}
+
+BOOST_FIXTURE_TEST_CASE(testRandomRealIntegerCmp, F) {
+	croc::random_real<> small(-1);
+	croc::random_real<> normal;
+	croc::random_real<> large(1);
+
+	BOOST_TEST((small < normal));
+	BOOST_TEST((normal < large));
+	BOOST_TEST((small < large));
 }
 
 BOOST_FIXTURE_TEST_CASE(testRandomRealCopyLess, F) {

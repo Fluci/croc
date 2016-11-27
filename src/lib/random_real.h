@@ -11,7 +11,8 @@
 namespace croc {
 
 /**
-* Represents a random real number in [0, 1]. 
+* Represents a random real number in `integer + [0, 1)` 
+* where `integer` is a signed integer fixed at construction. 
 * So-called blocks can be accessed by operator[](), 
 * they represent the bits at positions 
 * [i*sizeof(block), (i+1)*sizeof(block)-1].
@@ -31,7 +32,9 @@ template <class random_engine = std::mt19937>
 class random_real{
 
 public:
-	/// the single bits are stored in blocks, they have type block_type
+	/// signed integer/characteristic: everything in front of the dot is fixed at construction. 
+	typedef int integer_type;
+	/// fractional-part/mantissa: the single bits are stored in blocks, they have type block_type
 	typedef uint32_t block_type;
 	/// type of index that is used to access blocks
 	typedef size_t index_type;
@@ -50,8 +53,19 @@ public:
 private:
 	thread_local static random_engine r_engine;
 	std::vector<block_type> blocks;
-
+	integer_type integer;
 public:
+	/**
+	* Create a random_real with a characteristic int_part. 
+	* The integer part remains fixed.
+	**/
+	explicit random_real(integer_type int_part = 0) : integer(int_part) {
+		// empty
+	}
+
+	integer_type get_integer() const noexcept {
+		return integer;
+	}
 	/**
 	* creates all blocks with random_engine until block at i exists
 	*
@@ -109,7 +123,9 @@ public:
 		if(this == &other) {
 			return 0;
 		}
-		
+		if(integer != other.integer) {
+			return integer < other.integer ? -1 : 1;
+		}
 		const index_type common = std::min(size(), other.size());
 		for(index_type i = 0; i < common; i += 1) {
 			const block_type l = blocks[i];
@@ -191,7 +207,7 @@ public:
 	*/
 	friend std::ostream&
     operator<< (std::ostream &out, const random_real &real) noexcept {
-		out << "0.";
+		out << real.integer << ".";
 		for(auto it : real.blocks) {
 			out << std::bitset<sizeof(block_type)*8>(it);
 		}
