@@ -79,7 +79,7 @@ An alternative might be to use a root dummy node.
 
 - *Do unit-testing*: I'm a big fan of testing. 
 First reason is, it makes debugging a lot easier. 
-If you know a certain value triggers a bug; you normally need to start your application and create the exact situation such that the bug is triggered. 
+If you know a certain value triggers a bug; you typically need to start your application and create the exact situation such that the bug is triggered. 
 This can be time-consuming. 
 If your code is unit testable, tracking a bug down is a matter of one additional test.
 - *Don't over-do testing*: Testing is important. 
@@ -96,16 +96,83 @@ Tell the user what it's for and in the best case give a hint where the bigger pi
 (Don't over-do it, a link/reference to a paper or some well-chosen keywords in the class description might be sufficient.)
 - *Use Lint and similar tools*: Yes, coding style helps to understand code. 
 Honestly, I don't care if I write an `if` with or without a space between parenthesis (`if(){}` <-> `if () {}`). 
-I normally turn those hints off if they conflict with my personal style (consistency is important, not the concrete choice).
+I normally turn those hints off if they conflict with my personal style (consistency is important, not the actual choice).
 Let the computer be your teacher, and let it show you style issues that can cause serious bugs. 
 The problem zones of a language are well known, and solutions are often easy. 
 One of my favourite examples is `==` and `===` in JavaScript, both work, but `===` clearly leads to fewer bugs since it's closer to the intuition.
+- *Have a personal checklist*: Everybody has his/her weaknesses.
+Use a checklist for things you know you tend to get wrong.
 
 ## Feedback
 
 - *Ask people their opinion*: There's only so much you can do in your bubble, and there's nothing more valuable than a second opinion.
-Take every advice serious (from whoever it comes from); 
+Take every advice seriously (from whoever it comes from); 
 Think careful about it, discuss it and finally accept or reject it.
 Make sure it's your reason that decides and not your hurt ego.
 
+
+## My C++ Quality Checklist
+Some things I've encountered that weren't obvious to me at the time.
+
+- Assignment operator returns `*self` as reference. [isocpp FAQ](https://isocpp.org/wiki/faq/coding-standards#lint-guidelines)
+- Having any virtual method requires having a virtual destructor. [isocpp FAQ](https://isocpp.org/wiki/faq/coding-standards#lint-guidelines)
+- implement all five if at least one is needed: destructor, copy assignment operator, copy constructor, move assignment operator, move constructor [isocpp FAQ](https://isocpp.org/wiki/faq/coding-standards#lint-guidelines)
+- use initialization lists rather than assignment [isocpp FAQ](https://isocpp.org/wiki/faq/coding-standards#lint-guidelines)
+- check for danger of self assignment or other cases where an object is passed to itself [isocpp FAQ](https://isocpp.org/wiki/faq/coding-standards#lint-guidelines), [isocpp FAQ](https://isocpp.org/wiki/faq/assignment-operators#self-assignment-what)
+- carefull about placing `noexcept`
+- "a C++ byte might have mor than 8 bits" [isocpp FAQ](https://isocpp.org/wiki/faq/intrinsic-types#bits-per-byte): mostly from old times or today in low-level systems relevant??
+- difference `std::endl` and `'\n'`: `std::endl` also flushes (`std::flush`) [isocpp FAQ](https://isocpp.org/wiki/faq/input-output#endl-vs-slash-n)
+- correctly use printing of classes: `friand operator<<()` and `printOn()` [isocpp FAQ](https://isocpp.org/wiki/faq/input-output#output-operator-via-friends)
+- Use `/` as path separator [isocpp FAQ](https://isocpp.org/wiki/faq/input-output#backslashes-in-filenames)
+- `X& const x` is nonsense, references are always constant. [isocpp FAQ](https://isocpp.org/wiki/faq/const-correctness#const-ref-nonsense)
+- Make sure to return const references (to members) from constant methods. `const X& f() const;` (not `X& f() const;`), the compiler might not always catch this. [isocpp FAQ](https://isocpp.org/wiki/faq/const-correctness#return-const-ref-from-const-memfn)
+- Distinguish logical and physical state, first design the logical state. [isocpp FAQ](https://isocpp.org/wiki/faq/const-correctness#logical-vs-physical-state)
+- Use `const` depending on the object's logical state. [isocpp](https://isocpp.org/wiki/faq/const-correctness#logical-vs-physical-const)
+- "A reference is the object. It is not a pointer to the object, nor a copy of the object. It is the object." [isocpp FAQ](https://isocpp.org/wiki/faq/references#overview-refs)
+- `new` can throw exceptions. [cplusplus](http://www.cplusplus.com/reference/new/operator%20new/)
+- use `unique_ptr` instead of raw pointers
+- Members and base classes of a `struct` are `public` by default, for `class` they default to `private`. [isocpp FAQ](https://isocpp.org/wiki/faq/classes-and-objects#struct-vs-class)
+- `const` vs. `constexpr`: [stackoverflow](http://stackoverflow.com/questions/14116003/difference-between-constexpr-and-const)
+
+    **objects**:
+    
+    - `const`: value of object won't change (promise not to change)
+    - `constexpr`: fit for use in a constant expression (evaluation possible at compile time)
+    
+    **functions**:
+    
+    - `const`: only for non-static member functions: no logical state change.
+    - `constexpr`: function fit for use in constant expressions (non-virtual, one return, typedefs, static asserts, …; see [isocpp: Relaxin constraints](https://isocpp.org/blog/2013/04/n3652-relaxing-constraints-on-constexpr-functions))
+
+    **general**:
+    
+    - `const`: no logical state change allowed
+    - `constexpr`: use in constexpr -> Evaluation at compile time possible
+
+    **use in constant expressions**:
+    
+    - `const`: only for initialized literal/enumeration types; never functions
+    - `constexpr`: the very definition; functions need to be marked constexpr
+
+    **object declaration**:
+    
+    - `constexpr` implies `const`
+    
+    **member function declaration**:
+    
+    - Use both `constexpr` and `const`.
+
+- Use `{}` for initialization. [isocpp FAQ](https://isocpp.org/wiki/faq/cpp11-language#uniform-init)
+- Use `explicit` for constructors and operators. [isocpp FAQ](https://isocpp.org/wiki/faq/ctors#explicit-ctors)
+- Given by default to a class: [isocpp FAQ](https://isocpp.org/wiki/faq/ctors)
+    
+    - copy constructor: copies all elements
+    - copy assignment: copies all elements
+    - move constructor: moves all elements
+    - move assignment: moves all elements
+
+- Local objects are destructed in reversed construction order. [isocpp FAQ](https://isocpp.org/wiki/faq/dtors#order-dtors-for-locals)
+- Destructors always automagically destruct members. [isocpp FAQ](https://isocpp.org/wiki/faq/dtors#calling-member-dtors)
+- Destructors automagically call inherited destructors. [isocpp FAQ](https://isocpp.org/wiki/faq/dtors#calling-base-dtor)
+- Distinguish between operators defined as functions and defined as members. [isocpp FAQ: point 7](https://isocpp.org/wiki/faq/operator-overloading#op-ov-rules)
 
