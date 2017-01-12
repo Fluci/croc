@@ -7,6 +7,8 @@ I've tried to order my thoughts in different phases and roughly in a "temporal o
 
 No claim made on having the best solutions.
 
+The last section is a list of potential traps that I try to keep in mind.
+
 ## Preparation
 - *Know what you want*: I often want to do everything at once (implement this cool data structure, write that ingenious script, learn this aspect, spend time with my loved once, …). 
 Time management is important for me to look back on a successful day. 
@@ -45,6 +47,7 @@ Keep reading the tips-and-tricks pages of your favourite.
 
 ## Implementation
 
+- *Plan what you want to code*: At least do a short draft on a piece of paper or write down some core parts in form of commented pseudo-code.
 - *Start with the interface*: I prefer to start with the interface. 
 It forces you to think about the operations you want to support. 
 Starting with the implementation of an algorithm can lead to a lot of unnecessary refactoring. 
@@ -73,7 +76,7 @@ One way to implement this is by storing the parent in an additional variable and
 Another way is to use a pointer to a pointer (the field of the parent that points to the active node). 
 Both are valid solutions, but I prefer the double pointer method since it has less special cases. 
 An alternative might be to use a root dummy node. 
-
+- *Know when to use OOP and when procedural*: There's a trade-off between complexity and encapsulation. Complexity obviously is complex, you need to sit down and think about what's going on. Encapsulation can inflate your code and make it even harder to understand if used in to fine scale. [Object-Oriented Programming is Bad](https://www.youtube.com/watch?v=QM1iUe6IofM)
 
 ## Testing
 
@@ -88,6 +91,9 @@ Still working on finding the perfect balance …
 
 ## Cleanup
 
+- *Is it complete?*: Having many goals in life, some (especially private) projects tend to be done under time pressure or in small chunks of time scattered here and there (on the train to work, while waiting for the spaghetti-water to get hot, …). 
+Per se, that's often not a problem. 
+At least take your time before committing to make sure you've done every change you intended to do and nothing is missing.
 - *Write descriptive comments with context*: Imagine: The first thing somebody sees of your code, is the HTML documentation for your class. 
 If a variable is called `alarmSettings`, don't comment it with `settings for the alarm`. 
 Try to give something more descriptive like `allows to set alarm attributes like date, time and duration, for a complete list of possible values see xxx.` 
@@ -120,7 +126,7 @@ Some things I've encountered that weren't obvious to me at the time.
 - use initialization lists rather than assignment [isocpp FAQ](https://isocpp.org/wiki/faq/coding-standards#lint-guidelines)
 - check for danger of self assignment or other cases where an object is passed to itself [isocpp FAQ](https://isocpp.org/wiki/faq/coding-standards#lint-guidelines), [isocpp FAQ](https://isocpp.org/wiki/faq/assignment-operators#self-assignment-what)
 - carefull about placing `noexcept`
-- "a C++ byte might have more than 8 bits" [isocpp FAQ](https://isocpp.org/wiki/faq/intrinsic-types#bits-per-byte): mostly from old times or today in low-level systems relevant??
+- <cite>a C++ byte might have more than 8 bits</cite> [isocpp FAQ](https://isocpp.org/wiki/faq/intrinsic-types#bits-per-byte): mostly from old times or today in low-level systems relevant??
 - difference `std::endl` and `'\n'`: `std::endl` also flushes (`std::flush`) [isocpp FAQ](https://isocpp.org/wiki/faq/input-output#endl-vs-slash-n)
 - correctly use printing of classes: `friend operator<<()` and `printOn()` [isocpp FAQ](https://isocpp.org/wiki/faq/input-output#output-operator-via-friends)
 - Use `/` as path separator [isocpp FAQ](https://isocpp.org/wiki/faq/input-output#backslashes-in-filenames)
@@ -128,7 +134,7 @@ Some things I've encountered that weren't obvious to me at the time.
 - Make sure to return const references (to members) from constant methods. `const X& f() const;` (not `X& f() const;`), the compiler might not always catch this. [isocpp FAQ](https://isocpp.org/wiki/faq/const-correctness#return-const-ref-from-const-memfn)
 - Distinguish logical and physical state, first design the logical state. [isocpp FAQ](https://isocpp.org/wiki/faq/const-correctness#logical-vs-physical-state)
 - Use `const` depending on the object's logical state. [isocpp](https://isocpp.org/wiki/faq/const-correctness#logical-vs-physical-const)
-- "A reference is the object. It is not a pointer to the object, nor a copy of the object. It is the object." [isocpp FAQ](https://isocpp.org/wiki/faq/references#overview-refs)
+- <cite>A reference is the object. It is not a pointer to the object, nor a copy of the object. It is the object.</cite> [isocpp FAQ](https://isocpp.org/wiki/faq/references#overview-refs)
 - `new` can throw exceptions. [cplusplus](http://www.cplusplus.com/reference/new/operator%20new/)
 - use `unique_ptr` instead of raw pointers
 - Members and base classes of a `struct` are `public` by default, for `class` they default to `private`. [isocpp FAQ](https://isocpp.org/wiki/faq/classes-and-objects#struct-vs-class)
@@ -186,3 +192,7 @@ u. d.: user-declared
 	| destructor               | no u. d. destructor  |
 	| move constructor         | no u. d. copy constructor, copy assignment operator or destructor |
 	| move assignment operator | no u. d. copy constructor, copy assingment operator or destructor |
+- Careful about the One-Definition Rule. [Andrzej's C++ blog](https://akrzemi1.wordpress.com/2016/11/28/the-one-definition-rule/)
+- Interface design: Don't surprise your users.
+- Definition substitutability: <cite>the derived class is allowed (not required) to add (not remove) public methods, and for each public method inherited from the base class, the derived class is allowed (not required) to weaken preconditions and/or strengthen postconditions (not the other way around). Further the derived class is allowed to have completely different constructors, static methods, and non-public methods.</cite> [isocpp FAQ](https://isocpp.org/wiki/faq/proper-inheritance#circle-ellipse-behavior)
+- Know the trade-off with defensive checks (bad for static analyzers <-> good for robust coding) [Andrzej's C++ blog](https://akrzemi1.wordpress.com/2016/12/12/concealing-bugs/)
