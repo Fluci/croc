@@ -198,9 +198,10 @@ u. d.: user-declared
 - Know the trade-off with defensive checks (bad for static analyzers <-> good for robust coding) [Andrzej's C++ blog](https://akrzemi1.wordpress.com/2016/12/12/concealing-bugs/)
 - [CppCon Talk: Argue(ments)](https://www.youtube.com/watch?v=ZbVCGCy3mGQ): 
     Semantics of most common argument types, all other cases are very rare/don't make sense.
+
 | Type                             | Description        |
-| --------------------------------:|:------------------|
-| `T`                              | Snapshot |
+| -------------------------------: |:------------------ |
+| `T`                              | Snapshot           |
 | `T const &`                      | Observe |
 | `T const *`                      | Observe optional |
 | `T &`                            | Modify |
@@ -218,3 +219,5 @@ u. d.: user-declared
 | `shared_ptr<T const>&`           | Reseat |
 
 - Pass by Value when you can, pass by `const` reference when you must. Use profiling and benchmarking to decide. [CppCon Talk: Argue(ments)](https://www.youtube.com/watch?v=ZbVCGCy3mGQ)
+
+
