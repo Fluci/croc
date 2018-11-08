@@ -196,3 +196,25 @@ u. d.: user-declared
 - Interface design: Don't surprise your users.
 - Definition substitutability: <cite>the derived class is allowed (not required) to add (not remove) public methods, and for each public method inherited from the base class, the derived class is allowed (not required) to weaken preconditions and/or strengthen postconditions (not the other way around). Further the derived class is allowed to have completely different constructors, static methods, and non-public methods.</cite> [isocpp FAQ](https://isocpp.org/wiki/faq/proper-inheritance#circle-ellipse-behavior)
 - Know the trade-off with defensive checks (bad for static analyzers <-> good for robust coding) [Andrzej's C++ blog](https://akrzemi1.wordpress.com/2016/12/12/concealing-bugs/)
+- [CppCon Talk: Argue(ments)](https://www.youtube.com/watch?v=ZbVCGCy3mGQ): 
+    Semantics of most common argument types, all other cases are very rare/don't make sense.
+| Type                             | Description        |
+| --------------------------------:|:------------------|
+| `T`                              | Snapshot |
+| `T const &`                      | Observe |
+| `T const *`                      | Observe optional |
+| `T &`                            | Modify |
+| `T *`                            | Modfiy optional |
+| `T &&`                           | Sink, Transfer Ownership |
+| `unique_ptr<T>`                  | Sink, Transfer Ownership |
+| `unique_ptr<T const>`            | Sink, Transfer Ownership |
+| `shared_ptr<T>`                  | Share ownership |
+| `shared_ptr<T const>`            | Share ownership |
+| `shared_ptr<T> const &`          | Optionally Transfer Ownership |
+| `shared_ptr<T const> const &`    | Optionally Transfer Ownership |
+| `unique_ptr<T>&`                 | Reseat |
+| `unique_ptr<T const>&`           | Reseat |
+| `shared_ptr<T>&`                 | Reseat |
+| `shared_ptr<T const>&`           | Reseat |
+
+- Pass by Value when you can, pass by `const` reference when you must. Use profiling and benchmarking to decide. [CppCon Talk: Argue(ments)](https://www.youtube.com/watch?v=ZbVCGCy3mGQ)
